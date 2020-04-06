@@ -80,6 +80,19 @@ namespace COVID_CSV_Parser
             }
         }
 
+        public Int32 GetCubeRootColorIndex(Int32 inputValue)
+        {
+            Double result = 0;
+
+            // Calculation we're using is cube root of value divided by 4
+            result = Math.Round((Math.Pow(inputValue, (double)1 / 3)) / 4);
+
+            // Clamp to max value of 10
+            if (result > 10) result = 10;
+
+            return (Int32)result;
+        }
+
         // Method to read in the data file and get the latest results
         public void GetLatestData(Boolean downloadLatestData, string dataFilename)
         {
@@ -105,7 +118,7 @@ namespace COVID_CSV_Parser
                     // Build the URL with the current date string in the filename
                     // NOTE: Temporarily hard-wired to use yesterday's date
                     string csvURL = @"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/" +
-                        DateTime.Now.AddDays(0).ToString("MM-dd-yyyy") + ".csv";
+                        DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy") + ".csv";
 
                     GetCSVFileFromURL(csvURL, defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
@@ -126,7 +139,10 @@ namespace COVID_CSV_Parser
                             logText += "Deaths: " + record.Deaths.ToString() + " | ";
                             logText += "Recovered: " + record.Recovered.ToString() + Environment.NewLine;
 
-                            logTxt.AppendText(logText);
+                            if (chkShowLogData.Checked)
+                            {
+                                logTxt.AppendText(logText);
+                            }
                             rowCount++;
 
                             sqlConnection.Open();
@@ -140,7 +156,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Last_Update", record.Last_Update));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -148,6 +164,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception e)
@@ -186,7 +203,10 @@ namespace COVID_CSV_Parser
                             logText += "Deaths: " + record.Deaths.ToString() + " | ";
                             logText += "Recovered: " + record.Recovered.ToString() + Environment.NewLine;
 
-                            logTxt.AppendText(logText);
+                            if (chkShowLogData.Checked)
+                            {
+                                logTxt.AppendText(logText);
+                            }
                             rowCount++;
 
                             sqlConnection.Open();
@@ -200,7 +220,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Last_Update", record.Last_Update?? DateTime.Now.ToString()));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update?? DateTime.Now.ToString()));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -208,6 +228,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception e)

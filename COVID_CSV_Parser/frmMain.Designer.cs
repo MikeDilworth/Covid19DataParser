@@ -41,6 +41,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lblFileProcessed = new System.Windows.Forms.Label();
+            this.chkShowLogData = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // logTxt
@@ -139,7 +140,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(214, 13);
             this.label2.TabIndex = 9;
-            this.label2.Text = "(Today\'s Date Not Valid Until 8:00 PM EDT)";
+            this.label2.Text = "(Today\'s Date Not Valid Until 9:00 PM EDT)";
             // 
             // label3
             // 
@@ -159,11 +160,24 @@
             this.lblFileProcessed.TabIndex = 11;
             this.lblFileProcessed.Text = "No date selected";
             // 
+            // chkShowLogData
+            // 
+            this.chkShowLogData.AutoSize = true;
+            this.chkShowLogData.Checked = true;
+            this.chkShowLogData.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkShowLogData.Location = new System.Drawing.Point(50, 227);
+            this.chkShowLogData.Name = "chkShowLogData";
+            this.chkShowLogData.Size = new System.Drawing.Size(100, 17);
+            this.chkShowLogData.TabIndex = 12;
+            this.chkShowLogData.Text = "Show Log Data";
+            this.chkShowLogData.UseVisualStyleBackColor = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(571, 496);
+            this.Controls.Add(this.chkShowLogData);
             this.Controls.Add(this.lblFileProcessed);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -198,6 +212,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblFileProcessed;
+        private System.Windows.Forms.CheckBox chkShowLogData;
     }
 }
 
