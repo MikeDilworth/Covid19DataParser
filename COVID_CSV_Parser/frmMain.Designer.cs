@@ -159,13 +159,12 @@
             // chkShowLogData
             // 
             this.chkShowLogData.AutoSize = true;
-            this.chkShowLogData.Checked = true;
-            this.chkShowLogData.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkShowLogData.Location = new System.Drawing.Point(463, 348);
+            this.chkShowLogData.Location = new System.Drawing.Point(421, 348);
             this.chkShowLogData.Name = "chkShowLogData";
-            this.chkShowLogData.Size = new System.Drawing.Size(100, 17);
+            this.chkShowLogData.Size = new System.Drawing.Size(142, 17);
             this.chkShowLogData.TabIndex = 12;
-            this.chkShowLogData.Text = "Show Log Data";
+            this.chkShowLogData.Text = "Show Detailed Log Data";
+            this.chkShowLogData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkShowLogData.UseVisualStyleBackColor = true;
             // 
             // lblStateFileProcessed
@@ -194,6 +193,7 @@
             this.btnGetLatestStateData.TabIndex = 13;
             this.btnGetLatestStateData.Text = "Force Manual Update";
             this.btnGetLatestStateData.UseVisualStyleBackColor = true;
+            this.btnGetLatestStateData.Click += new System.EventHandler(this.btnGetLatestStateData_Click);
             // 
             // label5
             // 

@@ -15,6 +15,9 @@ using System.Net;
 using System.IO;
 using System.Globalization;
 using System.Timers;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace COVID_CSV_Parser
 {
@@ -93,167 +96,119 @@ namespace COVID_CSV_Parser
             return (Int32)result;
         }
 
+        // Method to create datetime string from encoded date only string
+        public string GetDateTimeString(string dateStringIn)
+        {
+            string dateTimeString = string.Empty;
+
+            if (dateStringIn.Length == 8)
+            {
+                dateTimeString = dateStringIn.Substring(0, 4) + "-" + dateStringIn.Substring(4, 2) + "-" + dateStringIn.Substring(6, 2) + " 00:00:00";
+            }
+
+            return dateTimeString;
+        }
+
         // Method to read in the latest state-level data file and post the results to the SQL DB
         public void GetLatestData_State(Boolean downloadLatestData, string dataFilename)
         {
             try
             {
-                SqlConnection sqlConnection = new SqlConnection();
-                DataTable tempRawdataTable = new DataTable();
-                SqlCommand cmd = new SqlCommand();
-
-                sqlConnection.ConnectionString = config.AppSettings.Settings["sqlConnString"].Value;
-
                 // Setup stopwatch
                 System.Diagnostics.Stopwatch elapsed = new System.Diagnostics.Stopwatch();
                 elapsed.Start();
 
-                // Instantiate parser engine
-                var engine = new FileHelperEngine<CovidDataRecord>();
+                // These directives needed to prevent security error on HTTP request
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                if (downloadLatestData)
+                var client = new RestClient("http://covidtracking.com/api/v1/states/daily.json");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = client.Execute(request);
+
+                // Create list for data records
+                var DailyDataList = new List<DailyStateTotals>();
+
+                var StateDataAr = JArray.Parse(response.Content);
+
+                Int32 rowCount = 0;
+                logTxt.Clear();
+
+                foreach (JObject a in StateDataAr)
                 {
-                    // Download the file first and store to c:\temp
-                    // Build the URL with the current date string in the filename
-                    // NOTE: Temporarily hard-wired to use yesterday's date
-                    string csvURL = @"https://raw.githubusercontent.com/nytimes/covid-19-data/0049690a25ca821942983a9cc0173464ad0c358f/us-states.csv" +
-                        DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy") + ".csv";
+                    var StateData = JObject.Parse(a.ToString());
 
-                    GetCSVFileFromURL(csvURL, defaultCSVFileDirectory + "\\LatestCovidData.csv");
-
-                    // Parse the downloaded file
-                    var records = engine.ReadFile(defaultCSVFileDirectory + "\\LatestCovidData.csv");
-
-                    Int32 rowCount = 0;
-
-                    logTxt.Clear();
-                    foreach (var record in records)
+                    DailyStateTotals foo = new DailyStateTotals
                     {
-                        if ((record.FIPS.ToString().Trim() != string.Empty) && (record.FIPS >= 1000) && (record.FIPS < 60000))
-                        {
-                            string logText = "FIPS: " + record.FIPS.ToString() + " | ";
-                            logText += "State: " + record.Province_State + " | ";
-                            logText += "County: " + record.Admin2 + " | ";
-                            logText += "Confirmed: " + record.Confirmed.ToString() + " | ";
-                            logText += "Deaths: " + record.Deaths.ToString() + " | ";
-                            logText += "Recovered: " + record.Recovered.ToString() + Environment.NewLine;
+                        date = (string)StateData.SelectToken("date"),
+                        state = (string)StateData.SelectToken("state"),
+                        positive = (string)StateData.SelectToken("positive"),
+                        negative = (string)StateData.SelectToken("negative"),
+                        deaths = (string)StateData.SelectToken("death"),
+                        hospitalized = (string)StateData.SelectToken("hospitalized"),
+                        total = (string)StateData.SelectToken("total"),
+                        totalResults = (string)StateData.SelectToken("totalTestResults"),
+                        fips = (string)StateData.SelectToken("fips"),
+                        deathInc = (string)StateData.SelectToken("deathIncrease"),
+                        hospInc = (string)StateData.SelectToken("hospitalizedIncrease"),
+                        negativeInc = (string)StateData.SelectToken("negativeIncrease"),
+                        positiveInc = (string)StateData.SelectToken("positiveIncrease"),
+                        totalTestResultsInc = (string)StateData.SelectToken("totalTestResultsIncrease")
+                    };
 
-                            if (chkShowLogData.Checked)
-                            {
-                                logTxt.AppendText(logText);
-                            }
-                            rowCount++;
-
-                            sqlConnection.Open();
-                            // Call stored procedure for each record to append data to database
-                            try
-                            {
-                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure"].Value, sqlConnection);
-                                cmd.CommandType = CommandType.StoredProcedure;
-
-                                cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
-                                cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
-                                cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
-                                cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
-                                cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
-                                cmd.ExecuteNonQuery();
-                            }
-                            catch (Exception e)
-                            {
-
-                                txtStatus.Text = "Error occurred during database posting: " + e.Message;
-                            }
-                            sqlConnection.Close();
-                        }
-                    }
-                    // Display stats for processing
-                    elapsed.Stop();
-                    logTxt.AppendText(Environment.NewLine);
-                    logTxt.AppendText("Last update processed: " + DateTime.Now.ToString() + Environment.NewLine);
-                    logTxt.AppendText("Data rows processed: " + rowCount.ToString() + Environment.NewLine);
-                    logTxt.AppendText("Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine);
-                    logTxt.AppendText("Current Data File Date: " + DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy"));
-                    txtStatus.Text = "Data update completed successfully at: " + DateTime.Now.ToString();
+                    DailyDataList.Add(foo);
+                    rowCount++;
                 }
-                else
+
+                SqlConnection conn = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                conn.Open();
+                SqlCommand cmd;
+
+                foreach (DailyStateTotals b in DailyDataList)
                 {
-                    // Parse the specified/selected file
-                    var records = engine.ReadFile(dataFilename);
-
-                    Int32 rowCount = 0;
-
-                    logTxt.Clear();
-                    foreach (var record in records)
+                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_State"].Value, conn)
                     {
-                        if ((record.FIPS.ToString().Trim() != string.Empty) && (record.FIPS >= 1000) && (record.FIPS < 60000))
-                        {
-                            string logText = "FIPS: " + record.FIPS.ToString() + " | ";
-                            logText += "State: " + record.Province_State + " | ";
-                            logText += "County: " + record.Admin2 + " | ";
-                            logText += "Confirmed: " + record.Confirmed.ToString() + " | ";
-                            logText += "Deaths: " + record.Deaths.ToString() + " | ";
-                            logText += "Recovered: " + record.Recovered.ToString() + Environment.NewLine;
+                        CommandType = CommandType.StoredProcedure,
+                    };
 
-                            if (chkShowLogData.Checked)
-                            {
-                                logTxt.AppendText(logText);
-                            }
-                            rowCount++;
+                    //ADD PARAMETER NAMES IN FIRST ARGUMENT VALUES
+                    cmd.Parameters.AddWithValue("@date", GetDateTimeString(b.date));
+                    cmd.Parameters.AddWithValue("@state", b.state ?? "");
+                    cmd.Parameters.AddWithValue("@positive", b.positive ?? "");
+                    cmd.Parameters.AddWithValue("@negative", b.negative ?? "");
+                    cmd.Parameters.AddWithValue("@deaths", b.deaths ?? "");
+                    cmd.Parameters.AddWithValue("@hospitalized", b.hospitalized ?? "");
+                    cmd.Parameters.AddWithValue("@total", b.total ?? "");
+                    cmd.Parameters.AddWithValue("@totalResults", b.totalResults ?? "");
+                    cmd.Parameters.AddWithValue("@fips", b.fips ?? "0");
+                    cmd.Parameters.AddWithValue("@deathInc", b.deathInc ?? "");
+                    cmd.Parameters.AddWithValue("@hospInc", b.hospInc ?? "");
+                    cmd.Parameters.AddWithValue("@negativeInc", b.negativeInc ?? "");
+                    cmd.Parameters.AddWithValue("@positiveInc", b.positiveInc ?? "");
+                    cmd.Parameters.AddWithValue("@totalTestResultsInc", b.totalTestResultsInc ?? "");
 
-                            sqlConnection.Open();
-                            // Call stored procedure for each record to append data to database
-                            try
-                            {
-                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure"].Value, sqlConnection);
-                                cmd.CommandType = CommandType.StoredProcedure;
+                    // Handle conversion to get heat map color index value                    
+                    if (b.positive == null) b.positive = "0";
+                    cmd.Parameters.AddWithValue("@ColorIndex_HeatMap", GetCubeRootColorIndex(int.Parse(b.positive)));
 
-                                cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
-                                cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
-                                cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
-                                cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update ?? DateTime.Now.ToString()));
-                                cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
-                                cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
-                                cmd.ExecuteNonQuery();
-                            }
-                            catch (Exception e)
-                            {
-
-                                txtStatus.Text = "Error occurred during database posting: " + e.Message;
-                            }
-                            sqlConnection.Close();
-                        }
-                    }
-                    // Display stats for processing
-                    elapsed.Stop();
-                    logTxt.AppendText(Environment.NewLine);
-                    logTxt.AppendText("Last update processed: " + DateTime.Now.ToString() + Environment.NewLine);
-                    logTxt.AppendText("Data rows processed: " + rowCount.ToString() + Environment.NewLine);
-                    logTxt.AppendText("Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine);
-                    logTxt.AppendText("Current Data File Date: " + DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy"));
-                    txtStatus.Text = "Data update completed successfully at: " + DateTime.Now.ToString();
+                    cmd.ExecuteNonQuery();
                 }
+
+                conn.Close();
+                // Display stats for processing
+                elapsed.Stop();
+                logTxt.AppendText("Last state data update processed: " + DateTime.Now.ToString() + Environment.NewLine);
+                logTxt.AppendText("Data rows processed: " + rowCount.ToString() + Environment.NewLine);
+                logTxt.AppendText("Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine);
+                txtStatus.Text = "State-Level data update completed successfully at: " + DateTime.Now.ToString();
+
             }
             catch (Exception e)
             {
-                txtStatus.Text = "Error occurred during data retrieval and database posting: " + e.Message;
+                txtStatus.Text = "Error occurred during state-level data retrieval and database posting: " + e.Message;
             }
         }
-
 
         // Method to read in the latest or specified county-level data file and post the results to the SQL DB
         public void GetLatestData_County(Boolean downloadLatestData, string dataFilename)
@@ -311,7 +266,7 @@ namespace COVID_CSV_Parser
                             // Call stored procedure for each record to append data to database
                             try
                             {
-                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure"].Value, sqlConnection);
+                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
                                 cmd.CommandType = CommandType.StoredProcedure;
 
                                 cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
@@ -339,12 +294,11 @@ namespace COVID_CSV_Parser
                     }
                     // Display stats for processing
                     elapsed.Stop();
-                    logTxt.AppendText(Environment.NewLine);
-                    logTxt.AppendText("Last update processed: " + DateTime.Now.ToString() + Environment.NewLine);
+                    logTxt.AppendText("Last county data update processed: " + DateTime.Now.ToString() + Environment.NewLine);
                     logTxt.AppendText("Data rows processed: " + rowCount.ToString() + Environment.NewLine);
                     logTxt.AppendText("Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine);
                     logTxt.AppendText("Current Data File Date: " + DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy"));
-                    txtStatus.Text = "Data update completed successfully at: " + DateTime.Now.ToString();
+                    txtStatus.Text = "County-level data update completed successfully at: " + DateTime.Now.ToString();
                 }
                 else
                 {
@@ -403,17 +357,16 @@ namespace COVID_CSV_Parser
                     }
                     // Display stats for processing
                     elapsed.Stop();
-                    logTxt.AppendText(Environment.NewLine);
-                    logTxt.AppendText("Last update processed: " + DateTime.Now.ToString() + Environment.NewLine);
+                    logTxt.AppendText("Last county data update processed: " + DateTime.Now.ToString() + Environment.NewLine);
                     logTxt.AppendText("Data rows processed: " + rowCount.ToString() + Environment.NewLine);
                     logTxt.AppendText("Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine);
                     logTxt.AppendText("Current Data File Date: " + DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy"));
-                    txtStatus.Text = "Data update completed successfully at: " + DateTime.Now.ToString();
+                    txtStatus.Text = "County-level data update completed successfully at: " + DateTime.Now.ToString();
                 }
             }
             catch (Exception e)
             {
-                txtStatus.Text = "Error occurred during data retrieval and database posting: " + e.Message;
+                txtStatus.Text = "Error occurred during county-level data retrieval and database posting: " + e.Message;
             }
         }
 
@@ -502,5 +455,10 @@ namespace COVID_CSV_Parser
             schedule_Timer();
         }
 
+        // Handler for getting the latest historical state-level data
+        private void btnGetLatestStateData_Click(object sender, EventArgs e)
+        {
+            GetLatestData_State(true, "");
+        }
     }
 }
