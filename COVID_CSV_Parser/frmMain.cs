@@ -290,6 +290,130 @@ namespace COVID_CSV_Parser
                                 txtStatus.Text = "Error occurred during database posting: " + e.Message;
                             }
                             sqlConnection.Close();
+
+                            // If the record is for NYC, append 4 additional records for the 4 boroughs not reported
+                            if (record.FIPS == 36061)
+                            {
+                                // Bronx County (FIPS = 36005)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36005));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Bronx"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.8448));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.8648));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Kings County (Brooklyn)  (FIPS = 36047)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36047));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Brooklyn"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.6782));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.9442));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Queens County  (FIPS = 36081)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36081));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Queens"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.7282));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.7949));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Richmond County (Staten Island)  (FIPS = 36085)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36085));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Staten Island"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.5795));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -74.1502));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+                            }
                         }
                     }
                     // Display stats for processing
@@ -329,7 +453,7 @@ namespace COVID_CSV_Parser
                             // Call stored procedure for each record to append data to database
                             try
                             {
-                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure"].Value, sqlConnection);
+                                cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
                                 cmd.CommandType = CommandType.StoredProcedure;
 
                                 cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
@@ -353,6 +477,130 @@ namespace COVID_CSV_Parser
                                 txtStatus.Text = "Error occurred during database posting: " + e.Message;
                             }
                             sqlConnection.Close();
+
+                            // If the record is for NYC, append 4 additional records for the 4 boroughs not reported
+                            if (record.FIPS == 36061)
+                            {
+                                // Bronx County (FIPS = 36005)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36005));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Bronx"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.8448));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.8648));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Kings County (Brooklyn)  (FIPS = 36047)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36047));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Brooklyn"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.6782));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.9442));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Queens County  (FIPS = 36081)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36081));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Queens"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.7282));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -73.7949));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+
+                                // Richmond County (Staten Island)  (FIPS = 36085)
+                                sqlConnection.Open();
+                                // Call stored procedure for each record to append data to database
+                                try
+                                {
+                                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_County"].Value, sqlConnection);
+                                    cmd.CommandType = CommandType.StoredProcedure;
+
+                                    cmd.Parameters.Add(new SqlParameter("@FIPS", 36085));
+                                    cmd.Parameters.Add(new SqlParameter("@County", "Staten Island"));
+                                    cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
+                                    cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
+                                    cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                    cmd.Parameters.Add(new SqlParameter("@Latitude", 40.5795));
+                                    cmd.Parameters.Add(new SqlParameter("@Longitude", -74.1502));
+                                    cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Deaths", record.Deaths ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
+                                    cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
+                                    cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception e)
+                                {
+
+                                    txtStatus.Text = "Error occurred during database posting: " + e.Message;
+                                }
+                                sqlConnection.Close();
+                            }
                         }
                     }
                     // Display stats for processing
