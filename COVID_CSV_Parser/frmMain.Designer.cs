@@ -51,11 +51,11 @@
             // 
             // logTxt
             // 
-            this.logTxt.Location = new System.Drawing.Point(15, 367);
+            this.logTxt.Location = new System.Drawing.Point(15, 349);
             this.logTxt.Multiline = true;
             this.logTxt.Name = "logTxt";
             this.logTxt.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTxt.Size = new System.Drawing.Size(548, 216);
+            this.logTxt.Size = new System.Drawing.Size(548, 232);
             this.logTxt.TabIndex = 0;
             // 
             // btnGetLatestCountyData
@@ -79,7 +79,7 @@
             // lblData
             // 
             this.lblData.AutoSize = true;
-            this.lblData.Location = new System.Drawing.Point(12, 348);
+            this.lblData.Location = new System.Drawing.Point(16, 330);
             this.lblData.Name = "lblData";
             this.lblData.Size = new System.Drawing.Size(33, 13);
             this.lblData.TabIndex = 3;
@@ -132,7 +132,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(343, 322);
+            this.label2.Location = new System.Drawing.Point(333, 326);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(214, 13);
             this.label2.TabIndex = 9;
@@ -159,13 +159,14 @@
             // chkShowLogData
             // 
             this.chkShowLogData.AutoSize = true;
-            this.chkShowLogData.Location = new System.Drawing.Point(421, 348);
+            this.chkShowLogData.Location = new System.Drawing.Point(55, 330);
             this.chkShowLogData.Name = "chkShowLogData";
             this.chkShowLogData.Size = new System.Drawing.Size(142, 17);
             this.chkShowLogData.TabIndex = 12;
             this.chkShowLogData.Text = "Show Detailed Log Data";
             this.chkShowLogData.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.chkShowLogData.UseVisualStyleBackColor = true;
+            this.chkShowLogData.Visible = false;
             // 
             // lblStateFileProcessed
             // 
