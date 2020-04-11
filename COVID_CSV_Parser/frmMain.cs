@@ -222,10 +222,6 @@ namespace COVID_CSV_Parser
                     cmd.Parameters.AddWithValue("@positiveInc", b.positiveInc ?? "");
                     cmd.Parameters.AddWithValue("@totalTestResultsInc", b.totalTestResultsInc ?? "");
 
-                    // Handle conversion to get heat map color index value                    
-                    if (b.positive == null) b.positive = "0";
-                    cmd.Parameters.AddWithValue("@ColorIndex_HeatMap", GetCubeRootColorIndex(int.Parse(b.positive)));
-
                     cmd.ExecuteNonQuery();
                 }
 
@@ -298,7 +294,7 @@ namespace COVID_CSV_Parser
                 // Build the URL with the current date string in the filename
                 // NOTE: Temporarily hard-wired to use yesterday's date
                 string csvURL = @"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/" +
-                    DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy") + ".csv";
+                    DateTime.Now.AddDays(0).ToString("MM-dd-yyyy") + ".csv";
 
                 GetCSVFileFromURL(csvURL, defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
@@ -346,7 +342,7 @@ namespace COVID_CSV_Parser
                             cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                            cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                            //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                             cmd.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -381,7 +377,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -413,7 +409,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -445,7 +441,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -477,7 +473,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -574,7 +570,7 @@ namespace COVID_CSV_Parser
                             cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                            cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                            //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                             cmd.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -596,7 +592,7 @@ namespace COVID_CSV_Parser
                                 cmd.CommandType = CommandType.StoredProcedure;
 
                                 cmd.Parameters.Add(new SqlParameter("@FIPS", 36005));
-                                cmd.Parameters.Add(new SqlParameter("@County", "Bronx"));
+                                cmd.Parameters.Add(new SqlParameter("@County", "The Bronx"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
                                 cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
@@ -607,7 +603,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -637,7 +633,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -667,7 +663,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -697,7 +693,7 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@Recovered", record.Recovered ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Active", record.Active ?? 0));
                                 cmd.Parameters.Add(new SqlParameter("@Combined_Key", record.Combined_Key));
-                                cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
+                                //cmd.Parameters.Add(new SqlParameter("@ColorIndex_HeatMap", GetCubeRootColorIndex(record.Confirmed ?? 0)));
                                 cmd.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -719,6 +715,7 @@ namespace COVID_CSV_Parser
                 resultString += "Data rows processed: " + rowCount.ToString() + Environment.NewLine;
                 resultString += "Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine;
                 resultString += "County-Level data update completed successfully at: " + DateTime.Now.ToString();
+                resultString += Environment.NewLine + Environment.NewLine;
 
                 logTxt.AppendText(resultString);
             }
@@ -778,7 +775,7 @@ namespace COVID_CSV_Parser
             Console.WriteLine("### Timer Started ###");
 
             nowTime = DateTime.Now;
-            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 21, 00, 0, 0); // Start at 9:00 PM
+            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 23, 50, 0, 0); // Start at 11:00 PM
 
             if (nowTime > scheduledTime)
             {
