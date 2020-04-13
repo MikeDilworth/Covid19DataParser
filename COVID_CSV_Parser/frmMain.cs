@@ -331,7 +331,10 @@ namespace COVID_CSV_Parser
                             cmd.CommandType = CommandType.StoredProcedure;
 
                             cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
-                            cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
+                            if (record.FIPS == 36061)
+                                cmd.Parameters.Add(new SqlParameter("@County", "Manhattan"));
+                            else
+                                cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                             cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                             cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
                             cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
@@ -366,7 +369,7 @@ namespace COVID_CSV_Parser
                                 cmd.CommandType = CommandType.StoredProcedure;
 
                                 cmd.Parameters.Add(new SqlParameter("@FIPS", 36005));
-                                cmd.Parameters.Add(new SqlParameter("@County", "Bronx"));
+                                cmd.Parameters.Add(new SqlParameter("@County", "The Bronx"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
                                 cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
@@ -559,7 +562,10 @@ namespace COVID_CSV_Parser
                             cmd.CommandType = CommandType.StoredProcedure;
 
                             cmd.Parameters.Add(new SqlParameter("@FIPS", record.FIPS));
-                            cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
+                            if (record.FIPS == 36061)
+                                cmd.Parameters.Add(new SqlParameter("@County", "Manhattan"));
+                            else
+                                cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                             cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                             cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
                             cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
