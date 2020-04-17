@@ -237,6 +237,13 @@ namespace COVID_CSV_Parser
                 resultString += "Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine;
                 resultString += "State-Level data update completed successfully at: " + DateTime.Now.ToString();
                 resultString += Environment.NewLine + Environment.NewLine;
+                
+                /*
+                // Write out a basic JSON data file
+                string json = JsonConvert.SerializeObject(response.Content, Formatting.Indented);
+                string filePath = @"c:\temp\LatestStateLevelData.json";
+                //File.WriteAllText(filePath, json);
+                */
 
                 e.Result = resultString;
             }
