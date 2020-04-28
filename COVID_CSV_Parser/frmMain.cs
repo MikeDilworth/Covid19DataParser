@@ -308,6 +308,9 @@ namespace COVID_CSV_Parser
                 // Parse the downloaded file
                 var records = engine.ReadFile(defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
+                // Set fixes timestamp\
+                string timestamp = DateTime.Now.AddDays(0).ToString("yyyy-MM-dd HH:mm:ss")
+
                 Int32 rowCount = 0;
 
                 //logTxt.Clear();
@@ -344,7 +347,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                             cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                             cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                            cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                            //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                            cmd.Parameters.Add(new SqlParameter("@Update_Time", timestamp));
                             cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -541,6 +545,13 @@ namespace COVID_CSV_Parser
                 // Parse the specified/selected file
                 var records = engine.ReadFile(dataFilename);
 
+                string baseFilename = Path.GetFileNameWithoutExtension(dataFilename);
+                string year = baseFilename.Substring(16, 4);
+                string month = baseFilename.Substring(10, 2);
+                string day = baseFilename.Substring(13, 2);
+                string timeStamp = year + "-" + month + "-" + day + " 23:59:59";
+
+
                 Int32 rowCount = 0;
 
                 //logTxt.Clear();
@@ -575,7 +586,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", record.Admin2));
                             cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                             cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                            cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                            //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                            cmd.Parameters.Add(new SqlParameter("@Update_Time", timeStamp));
                             cmd.Parameters.Add(new SqlParameter("@Latitude", record.Lat ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Longitude", record.Long_ ?? 0));
                             cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
