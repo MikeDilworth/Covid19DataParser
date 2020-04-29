@@ -309,7 +309,7 @@ namespace COVID_CSV_Parser
                 var records = engine.ReadFile(defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
                 // Set fixes timestamp\
-                string timestamp = DateTime.Now.AddDays(0).ToString("yyyy-MM-dd HH:mm:ss")
+                string timestamp = DateTime.Now.AddDays(0).ToString("yyyy-MM-dd HH:mm:ss");
 
                 Int32 rowCount = 0;
 
@@ -383,7 +383,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", "The Bronx"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", timestamp));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", 40.8448));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", -73.8648));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -415,7 +416,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", "Brooklyn"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", timestamp));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", 40.6782));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", -73.9442));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -447,7 +449,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", "Queens"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", timestamp));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", 40.7282));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", -73.7949));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
@@ -479,7 +482,8 @@ namespace COVID_CSV_Parser
                                 cmd.Parameters.Add(new SqlParameter("@County", "Staten Island"));
                                 cmd.Parameters.Add(new SqlParameter("@Province_State", record.Province_State));
                                 cmd.Parameters.Add(new SqlParameter("@Country_Region", record.Country_Region));
-                                cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                //cmd.Parameters.Add(new SqlParameter("@Update_Time", record.Last_Update));
+                                cmd.Parameters.Add(new SqlParameter("@Update_Time", timestamp));
                                 cmd.Parameters.Add(new SqlParameter("@Latitude", 40.5795));
                                 cmd.Parameters.Add(new SqlParameter("@Longitude", -74.1502));
                                 cmd.Parameters.Add(new SqlParameter("@Confirmed", record.Confirmed ?? 0));
