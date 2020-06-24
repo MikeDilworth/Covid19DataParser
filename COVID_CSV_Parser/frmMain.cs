@@ -308,7 +308,7 @@ namespace COVID_CSV_Parser
                 // Parse the downloaded file
                 var records = engine.ReadFile(defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
-                // Set fixes timestamp\
+                // Set fixes timestamp
                 string timestamp = DateTime.Now.AddDays(0).ToString("yyyy-MM-dd HH:mm:ss");
 
                 Int32 rowCount = 0;
@@ -530,6 +530,8 @@ namespace COVID_CSV_Parser
         // Method to get the county-level data for the specified date
         private void GetDataForSpecifiedDateCountyLevel(string dataFilename)
         {
+            Int32 rowCount = 0;
+
             try
             {
                 SqlConnection sqlConnection = new SqlConnection();
@@ -545,6 +547,7 @@ namespace COVID_CSV_Parser
 
                 // Instantiate parser engine
                 var engine = new FileHelperEngine<CovidDataRecord>();
+                //engine.ErrorManager.ErrorMode
 
                 // Parse the specified/selected file
                 var records = engine.ReadFile(dataFilename);
@@ -554,9 +557,6 @@ namespace COVID_CSV_Parser
                 string month = baseFilename.Substring(10, 2);
                 string day = baseFilename.Substring(13, 2);
                 string timeStamp = year + "-" + month + "-" + day + " 23:59:59";
-
-
-                Int32 rowCount = 0;
 
                 //logTxt.Clear();
                 foreach (var record in records)
@@ -750,7 +750,7 @@ namespace COVID_CSV_Parser
             }
             catch (Exception ex)
             {
-                txtStatus.Text = "Error occurred during county-level data retrieval and database posting: " + ex.Message;
+                txtStatus.Text = "Error occurred during county-level data retrieval and database posting at row #" + rowCount.ToString() + ": " + ex.Message;
             }
         }
 

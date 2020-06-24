@@ -45,5 +45,11 @@ namespace COVID_CSV_Parser
         //Combined key
         [FieldQuoted('"', QuoteMode.OptionalForBoth)]
         public string Combined_Key { get; set; }
+
+        //Incidence_Rate
+        public float? Incidence_Rate { get; set; }
+
+        //Case-Fatality_Ratio
+        public float? Case_Fatality_Ratio { get; set; }
     }
 }
