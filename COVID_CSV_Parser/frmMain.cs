@@ -299,9 +299,9 @@ namespace COVID_CSV_Parser
 
                 // Download the file first and store to c:\temp
                 // Build the URL with the current date string in the filename
-                // NOTE: Temporarily hard-wired to use yesterday's date
+                // NOTE: Hard-wired to use yesterday's date
                 string csvURL = @"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/" +
-                    DateTime.Now.AddDays(0).ToString("MM-dd-yyyy") + ".csv";
+                    DateTime.Now.AddDays(-1).ToString("MM-dd-yyyy") + ".csv";
 
                 GetCSVFileFromURL(csvURL, defaultCSVFileDirectory + "\\LatestCovidData.csv");
 
@@ -804,7 +804,7 @@ namespace COVID_CSV_Parser
             Console.WriteLine("### Timer Started ###");
 
             nowTime = DateTime.Now;
-            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 23, 50, 0, 0); // Start at 11:00 PM
+            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 00, 10, 0, 0).AddDays(1); // Start at 12:10 AM tomorrow 
 
             if (nowTime > scheduledTime)
             {
