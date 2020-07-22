@@ -804,7 +804,7 @@ namespace COVID_CSV_Parser
             Console.WriteLine("### Timer Started ###");
 
             nowTime = DateTime.Now;
-            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 00, 10, 0, 0).AddDays(1); // Start at 12:10 AM tomorrow 
+            scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 06, 00, 0, 0).AddDays(0); // Start at 6:00 AM tomorrow 
 
             if (nowTime > scheduledTime)
             {
