@@ -47,6 +47,8 @@ namespace COVID_CSV_Parser
         // Declare background worker threads for state & county-level data fetches
         private BackgroundWorker backgroundWorkerStateLevel;
         private BackgroundWorker backgroundWorkerCountyLevel;
+        // Added for vaccination data
+        private BackgroundWorker backgroundWorkerVaccinationStateLevel;
 
         public frmMain()
         {
@@ -64,6 +66,10 @@ namespace COVID_CSV_Parser
             backgroundWorkerCountyLevel = new BackgroundWorker();
             backgroundWorkerCountyLevel.DoWork += new DoWorkEventHandler(BackgroundWorkerCountyLevel_DoWork);
             backgroundWorkerCountyLevel.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerCountyLevel_RunWorkerCompleted);
+            //Added for vaccination data
+            backgroundWorkerVaccinationStateLevel = new BackgroundWorker();
+            backgroundWorkerVaccinationStateLevel.DoWork += new DoWorkEventHandler(BackgroundWorkerVaccinationStateLevel_DoWork);
+            backgroundWorkerVaccinationStateLevel.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorkerVaccinationStateLevel_RunWorkerCompleted);
         }
 
         // Method to get CSV file from specified URL - currently not used
@@ -252,6 +258,148 @@ namespace COVID_CSV_Parser
                 txtStatus.Invoke((MethodInvoker)delegate {
                     // Running on the UI thread
                     txtStatus.Text = "Error occurred during state-level data retrieval and database posting: " + ex.Message;
+                });
+            }
+        }
+
+        /// <summary>
+        /// Event handlers for the state-level vaccination data worker thread
+        /// </summary>
+        // Handler for state level vaccination data background thread work completed
+        private void BackgroundWorkerVaccinationStateLevel_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            logTxt.Invoke((MethodInvoker)delegate {
+                // Running on the UI thread
+                logTxt.AppendText(e.Result.ToString());
+            });
+        }
+
+        // Handler for manual update button for vaccination data
+        private void btnGetLatestStateVaccinationData_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorkerVaccinationStateLevel.IsBusy != true)
+            {
+                backgroundWorkerVaccinationStateLevel.RunWorkerAsync();
+            }
+
+        }
+
+        // Worker thread method to read in the latest state-level vaccination data file and post the results to the SQL DB
+        private void BackgroundWorkerVaccinationStateLevel_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                // Setup stopwatch
+                System.Diagnostics.Stopwatch elapsed = new System.Diagnostics.Stopwatch();
+                elapsed.Start();
+
+                // These directives needed to prevent security error on HTTP request
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+                var client = new RestClient("https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData?id=vaccination_data");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.GET);
+                IRestResponse response = client.Execute(request);
+
+                // Create list for data records
+                var DailyVaccinationDataList = new List<DailyStateVaccinationTotals>();
+
+                //var StateVaccinationDataAr = JArray.Parse(response.Content);
+                var tempData = JObject.Parse(response.Content);
+
+                JArray StateVaccinationDataAr = (JArray)tempData["vaccination_data"];
+
+                //var StateVaccinationDataAr = tempData.SelectTokens("vaccination_data");
+
+                Int32 rowCount = 0;
+                //logTxt.Clear();
+
+                foreach (JObject a in StateVaccinationDataAr)
+                {
+                    var StateVaccinationData = JObject.Parse(a.ToString());
+
+                    DailyStateVaccinationTotals dsvt = new DailyStateVaccinationTotals
+                    {
+                        Date = (string)StateVaccinationData.SelectToken("Date"),
+                        MMWR_week = (string)StateVaccinationData.SelectToken("MMWR_week"),
+                        Location = (string)StateVaccinationData.SelectToken("Location"),
+                        ShortName= (string)StateVaccinationData.SelectToken("ShortName"),
+                        LongName = (string)StateVaccinationData.SelectToken("LongName"),
+                        Doses_Distributed = (string)StateVaccinationData.SelectToken("Doses_Distributed"),
+                        Doses_Administered = (string)StateVaccinationData.SelectToken("Doses_Administered"),
+                        Dist_Per_100K = (string)StateVaccinationData.SelectToken("Dist_Per_100K"),
+                        Admin_Per_100K = (string)StateVaccinationData.SelectToken("Admin_Per_100K"),
+                        Census2019 = (string)StateVaccinationData.SelectToken("Census2019"),
+                        Administered_Moderna = (string)StateVaccinationData.SelectToken("Administered_Moderna"),
+                        Administered_Pfizer = (string)StateVaccinationData.SelectToken("Administered_Pfizer"),
+                        Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
+                        Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist")
+                    };
+
+                    DailyVaccinationDataList.Add(dsvt);
+                    rowCount++;
+                }
+
+                SqlConnection conn = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                conn.Open();
+                SqlCommand cmd;
+
+                foreach (DailyStateVaccinationTotals d in DailyVaccinationDataList)
+                {
+                    //cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_Vaccination_State"].Value, conn)
+                    cmd = new SqlCommand("insertParsedJSONStateVaccinationData", conn)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                    };
+
+                    //ADD PARAMETER NAMES IN FIRST ARGUMENT VALUES
+                    //cmd.Parameters.AddWithValue("@Date", GetDateTimeString(d.Date));
+                    cmd.Parameters.AddWithValue("@Date", d.Date ?? "");
+                    cmd.Parameters.AddWithValue("@MMWR_week", d.MMWR_week ?? "");
+                    cmd.Parameters.AddWithValue("@Location", d.Location ?? "");
+                    cmd.Parameters.AddWithValue("@ShortName", d.ShortName ?? "");
+                    cmd.Parameters.AddWithValue("@LongName", d.LongName ?? "");
+                    cmd.Parameters.AddWithValue("@Doses_Distributed", d.Doses_Distributed ?? "");
+                    cmd.Parameters.AddWithValue("@Doses_Administered", d.Doses_Administered ?? "");
+                    cmd.Parameters.AddWithValue("@Dist_Per_100K", d.Dist_Per_100K ?? "");
+                    cmd.Parameters.AddWithValue("@Admin_Per_100K", d.Admin_Per_100K ?? "");
+                    cmd.Parameters.AddWithValue("@Census2019", d.Census2019 ?? "");
+                    cmd.Parameters.AddWithValue("@Administered_Moderna ", d.Administered_Moderna ?? "");
+                    cmd.Parameters.AddWithValue("@Administered_Pfizer ", d.Administered_Pfizer ?? "");
+                    cmd.Parameters.AddWithValue("@Administered_Unk_Manuf", d.Administered_Unk_Manuf ?? "");
+                    cmd.Parameters.AddWithValue("@Ratio_Admin_Dist ", d.Ratio_Admin_Dist ?? "");
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                conn.Close();
+
+                // Display stats for processing
+                elapsed.Stop();
+
+                string resultString = string.Empty;
+                resultString += "STATE LEVEL VACCINTAION DATA - LATEST DATA" + Environment.NewLine;
+                resultString += "Last state vaccination data update processed: " + DateTime.Now.ToString() + Environment.NewLine;
+                resultString += "Data rows processed: " + rowCount.ToString() + Environment.NewLine;
+                resultString += "Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine;
+                resultString += "State-Level vaccination data update completed successfully at: " + DateTime.Now.ToString();
+                resultString += Environment.NewLine + Environment.NewLine;
+
+                /*
+                // Write out a basic JSON data file
+                string json = JsonConvert.SerializeObject(response.Content, Formatting.Indented);
+                string filePath = @"c:\temp\LatestStateLevelData.json";
+                //File.WriteAllText(filePath, json);
+                */
+
+                e.Result = resultString;
+            }
+            catch (Exception ex)
+            {
+                txtStatus.Invoke((MethodInvoker)delegate {
+                    // Running on the UI thread
+                    txtStatus.Text = "Error occurred during state-level vaccination data retrieval and database posting: " + ex.Message;
                 });
             }
         }
@@ -824,6 +972,12 @@ namespace COVID_CSV_Parser
             if (backgroundWorkerStateLevel.IsBusy != true)
             {
                 backgroundWorkerStateLevel.RunWorkerAsync();
+            }
+
+            // Start worker thread to get latest state-level vaccinationdata
+            if (backgroundWorkerVaccinationStateLevel.IsBusy != true)
+            {
+                backgroundWorkerVaccinationStateLevel.RunWorkerAsync();
             }
 
             // Start worker thread to get latest county-level data

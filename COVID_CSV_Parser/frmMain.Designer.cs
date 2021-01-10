@@ -47,6 +47,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnGetLatestStateVaccinationData = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // logTxt
@@ -225,11 +226,22 @@
             this.label1.TabIndex = 21;
             this.label1.Text = "Status:";
             // 
+            // btnGetLatestStateVaccinationData
+            // 
+            this.btnGetLatestStateVaccinationData.Location = new System.Drawing.Point(336, 33);
+            this.btnGetLatestStateVaccinationData.Name = "btnGetLatestStateVaccinationData";
+            this.btnGetLatestStateVaccinationData.Size = new System.Drawing.Size(149, 23);
+            this.btnGetLatestStateVaccinationData.TabIndex = 22;
+            this.btnGetLatestStateVaccinationData.Text = "Vaccination Data";
+            this.btnGetLatestStateVaccinationData.UseVisualStyleBackColor = true;
+            this.btnGetLatestStateVaccinationData.Click += new System.EventHandler(this.btnGetLatestStateVaccinationData_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(577, 623);
+            this.Controls.Add(this.btnGetLatestStateVaccinationData);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -249,7 +261,7 @@
             this.Controls.Add(this.btnGetLatestCountyData);
             this.Controls.Add(this.logTxt);
             this.Name = "frmMain";
-            this.Text = "COVID-19 CSV Data File Parser  Version 1.0.0";
+            this.Text = "COVID-19 CSV Data File Parser  Version 1.1.0";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,6 +288,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnGetLatestStateVaccinationData;
     }
 }
 
