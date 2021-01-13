@@ -261,7 +261,7 @@
             this.Controls.Add(this.btnGetLatestCountyData);
             this.Controls.Add(this.logTxt);
             this.Name = "frmMain";
-            this.Text = "COVID-19 CSV Data File Parser  Version 1.1.0";
+            this.Text = "COVID-19 CSV Data File Parser  Version 1.1.1";
             this.ResumeLayout(false);
             this.PerformLayout();
 

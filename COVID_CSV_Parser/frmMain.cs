@@ -233,6 +233,17 @@ namespace COVID_CSV_Parser
 
                 conn.Close();
 
+                // Call the stored procedure to update the national level data
+                SqlConnection conn2 = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                conn2.Open();
+                SqlCommand cmd2;
+                cmd2 = new SqlCommand("updateSummaryNationalData", conn2)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                cmd2.ExecuteNonQuery();
+                conn2.Close();
+
                 // Display stats for processing
                 elapsed.Stop();
 
@@ -374,6 +385,17 @@ namespace COVID_CSV_Parser
                 }
 
                 conn.Close();
+
+                // Call the stored procedure to update the national level data
+                SqlConnection conn2 = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                conn2.Open();
+                SqlCommand cmd2;
+                cmd2 = new SqlCommand("updateSummaryNationalVaccinationData", conn2)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                };
+                cmd2.ExecuteNonQuery();
+                conn2.Close();
 
                 // Display stats for processing
                 elapsed.Stop();
