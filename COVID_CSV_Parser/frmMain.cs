@@ -41,8 +41,10 @@ namespace COVID_CSV_Parser
 
         // Schedule timer
         static System.Timers.Timer timer;
+        static System.Timers.Timer timer2;
         static DateTime nowTime = DateTime.Now;
         static DateTime scheduledTime;
+        static DateTime scheduledTime2;
 
         // Declare background worker threads for state & county-level data fetches
         private BackgroundWorker backgroundWorkerStateLevel;
@@ -56,8 +58,9 @@ namespace COVID_CSV_Parser
 
             openFileDialog.InitialDirectory = defaultCSVFileDirectory;
 
-            // Start the schedule timer
+            // Start the schedule timers
             schedule_Timer();
+            schedule_Timer2();
 
             // Setup the background worker threads
             backgroundWorkerStateLevel = new BackgroundWorker();
@@ -967,11 +970,11 @@ namespace COVID_CSV_Parser
             lblCountyFileProcessed.Text = "CovidData_" + selectedDate.ToString("MM-dd-yyyy") + ".csv";
         }
 
-        // Here's the scheduling timer - fire at 9:00 PM
+        // Here's scheduling timer #1 - fire at 6:00 AM
         //static void schedule_Timer()
         void schedule_Timer()
         {
-            Console.WriteLine("### Timer Started ###");
+            Console.WriteLine("### Timer #1 Started ###");
 
             nowTime = DateTime.Now;
             scheduledTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 06, 00, 0, 0).AddDays(0); // Start at 6:00 AM tomorrow 
@@ -987,6 +990,27 @@ namespace COVID_CSV_Parser
             timer.Start();
         }
 
+        // Here's scheduling timer #2 - fire at 6:00 PM
+        //static void schedule_Timer2()
+        void schedule_Timer2()
+        {
+            Console.WriteLine("### Timer #2 Started ###");
+
+            nowTime = DateTime.Now;
+            scheduledTime2 = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, 18, 00, 0, 0).AddDays(0); // Start at 6:00 PM tomorrow 
+
+            if (nowTime > scheduledTime2)
+            {
+                scheduledTime2 = scheduledTime2.AddDays(1);
+            }
+
+            double tickTime = (double)(scheduledTime2 - DateTime.Now).TotalMilliseconds;
+            timer2 = new System.Timers.Timer(tickTime);
+            timer2.Elapsed += new ElapsedEventHandler(timer2_Elapsed);
+            timer2.Start();
+        }
+
+        // Handler for Timer #1 elapsed
         //static void timer_Elapsed(object sender, ElapsedEventArgs e)
         void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -996,11 +1020,13 @@ namespace COVID_CSV_Parser
                 backgroundWorkerStateLevel.RunWorkerAsync();
             }
 
+            /*
             // Start worker thread to get latest state-level vaccinationdata
             if (backgroundWorkerVaccinationStateLevel.IsBusy != true)
             {
                 backgroundWorkerVaccinationStateLevel.RunWorkerAsync();
             }
+            */
 
             // Start worker thread to get latest county-level data
             if (backgroundWorkerCountyLevel.IsBusy != true)
@@ -1014,5 +1040,23 @@ namespace COVID_CSV_Parser
             // Restart the schedule timer
             schedule_Timer();
         }
+
+        // Handler for Timer #2 elapsed
+        //static void timer2_Elapsed(object sender, ElapsedEventArgs e)
+        void timer2_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Start worker thread to get latest state-level vaccinationdata
+            if (backgroundWorkerVaccinationStateLevel.IsBusy != true)
+            {
+                backgroundWorkerVaccinationStateLevel.RunWorkerAsync();
+            }
+
+            // Stop the timer
+            timer2.Stop();
+
+            // Restart the schedule timer
+            schedule_Timer2();
+        }
+
     }
 }
