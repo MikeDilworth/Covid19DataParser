@@ -124,7 +124,7 @@
             // monthCalendar
             // 
             this.monthCalendar.Location = new System.Drawing.Point(336, 155);
-            this.monthCalendar.MaxDate = new System.DateTime(2020, 12, 31, 0, 0, 0, 0);
+            this.monthCalendar.MaxDate = new System.DateTime(2022, 12, 31, 0, 0, 0, 0);
             this.monthCalendar.MaxSelectionCount = 1;
             this.monthCalendar.MinDate = new System.DateTime(2020, 1, 22, 0, 0, 0, 0);
             this.monthCalendar.Name = "monthCalendar";

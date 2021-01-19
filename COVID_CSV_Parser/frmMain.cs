@@ -204,48 +204,68 @@ namespace COVID_CSV_Parser
                     rowCount++;
                 }
 
-                SqlConnection conn = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
-                conn.Open();
-                SqlCommand cmd;
-
-                foreach (DailyStateTotals b in DailyDataList)
+                try
                 {
-                    cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_State"].Value, conn)
+                    SqlConnection conn = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                    conn.Open();
+                    SqlCommand cmd;
+
+                    foreach (DailyStateTotals b in DailyDataList)
+                    {
+                        cmd = new SqlCommand(config.AppSettings.Settings["storedProcedure_State"].Value, conn)
+                        {
+                            CommandType = CommandType.StoredProcedure,
+                        };
+
+                        //ADD PARAMETER NAMES IN FIRST ARGUMENT VALUES
+                        cmd.Parameters.AddWithValue("@date", GetDateTimeString(b.date));
+                        cmd.Parameters.AddWithValue("@state", b.state ?? "");
+                        cmd.Parameters.AddWithValue("@positive", b.positive ?? "");
+                        cmd.Parameters.AddWithValue("@negative", b.negative ?? "");
+                        cmd.Parameters.AddWithValue("@deaths", b.deaths ?? "");
+                        cmd.Parameters.AddWithValue("@hospitalized", b.hospitalized ?? "");
+                        cmd.Parameters.AddWithValue("@total", b.total ?? "");
+                        cmd.Parameters.AddWithValue("@totalResults", b.totalResults ?? "");
+                        cmd.Parameters.AddWithValue("@fips", b.fips ?? "0");
+                        cmd.Parameters.AddWithValue("@deathInc", b.deathInc ?? "");
+                        cmd.Parameters.AddWithValue("@hospInc", b.hospInc ?? "");
+                        cmd.Parameters.AddWithValue("@negativeInc", b.negativeInc ?? "");
+                        cmd.Parameters.AddWithValue("@positiveInc", b.positiveInc ?? "");
+                        cmd.Parameters.AddWithValue("@totalTestResultsInc", b.totalTestResultsInc ?? "");
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    txtStatus.Invoke((MethodInvoker)delegate {
+                        // Running on the UI thread
+                        txtStatus.Text = "Error occurred during inner loop state-level data retrieval and database posting: " + ex.Message;
+                    });
+                }
+
+                try
+                {
+                    // Call the stored procedure to update the national level data
+                    SqlConnection conn2 = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
+                    conn2.Open();
+                    SqlCommand cmd2;
+                    cmd2 = new SqlCommand("updateSummaryNationalData", conn2)
                     {
                         CommandType = CommandType.StoredProcedure,
                     };
-
-                    //ADD PARAMETER NAMES IN FIRST ARGUMENT VALUES
-                    cmd.Parameters.AddWithValue("@date", GetDateTimeString(b.date));
-                    cmd.Parameters.AddWithValue("@state", b.state ?? "");
-                    cmd.Parameters.AddWithValue("@positive", b.positive ?? "");
-                    cmd.Parameters.AddWithValue("@negative", b.negative ?? "");
-                    cmd.Parameters.AddWithValue("@deaths", b.deaths ?? "");
-                    cmd.Parameters.AddWithValue("@hospitalized", b.hospitalized ?? "");
-                    cmd.Parameters.AddWithValue("@total", b.total ?? "");
-                    cmd.Parameters.AddWithValue("@totalResults", b.totalResults ?? "");
-                    cmd.Parameters.AddWithValue("@fips", b.fips ?? "0");
-                    cmd.Parameters.AddWithValue("@deathInc", b.deathInc ?? "");
-                    cmd.Parameters.AddWithValue("@hospInc", b.hospInc ?? "");
-                    cmd.Parameters.AddWithValue("@negativeInc", b.negativeInc ?? "");
-                    cmd.Parameters.AddWithValue("@positiveInc", b.positiveInc ?? "");
-                    cmd.Parameters.AddWithValue("@totalTestResultsInc", b.totalTestResultsInc ?? "");
-
-                    cmd.ExecuteNonQuery();
+                    cmd2.ExecuteNonQuery();
+                    conn2.Close();
                 }
-
-                conn.Close();
-
-                // Call the stored procedure to update the national level data
-                SqlConnection conn2 = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
-                conn2.Open();
-                SqlCommand cmd2;
-                cmd2 = new SqlCommand("updateSummaryNationalData", conn2)
+                catch (Exception ex)
                 {
-                    CommandType = CommandType.StoredProcedure,
-                };
-                cmd2.ExecuteNonQuery();
-                conn2.Close();
+                    txtStatus.Invoke((MethodInvoker)delegate {
+                        // Running on the UI thread
+                        txtStatus.Text = "Error occurred during call to stored proc for national-level database posting: " + ex.Message;
+                    });
+                }
 
                 // Display stats for processing
                 elapsed.Stop();
@@ -404,7 +424,7 @@ namespace COVID_CSV_Parser
                 elapsed.Stop();
 
                 string resultString = string.Empty;
-                resultString += "STATE LEVEL VACCINTAION DATA - LATEST DATA" + Environment.NewLine;
+                resultString += "STATE LEVEL VACCINATION DATA - LATEST DATA" + Environment.NewLine;
                 resultString += "Last state vaccination data update processed: " + DateTime.Now.ToString() + Environment.NewLine;
                 resultString += "Data rows processed: " + rowCount.ToString() + Environment.NewLine;
                 resultString += "Total elapsed time (seconds): " + elapsed.Elapsed.TotalSeconds + Environment.NewLine;
