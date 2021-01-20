@@ -39,6 +39,9 @@ namespace COVID_CSV_Parser
         // For file selector
         string defaultCSVFileDirectory = config.AppSettings.Settings["defaultCSVFileDirectory"].Value;
 
+        // For vaccination data
+        string defaultJSONFileDirectory = config.AppSettings.Settings["defaultJSONFileDirectory"].Value;
+
         // Schedule timer
         static System.Timers.Timer timer;
         static System.Timers.Timer timer2;
@@ -94,6 +97,19 @@ namespace COVID_CSV_Parser
 
         // Method to use a WebClient to pull a text file from a specified URL
         public void GetCSVFileFromURL(string myURL, string myFilePath)
+        {
+            // These directives needed to prevent security error on HTTP request
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(myURL, myFilePath);
+            }
+        }
+
+        // Method to use a WebClient to pull a text file from a specified URL
+        public void GetJSONFileFromURL(string myURL, string myFilePath)
         {
             // These directives needed to prevent security error on HTTP request
             ServicePointManager.Expect100Continue = true;
@@ -331,7 +347,13 @@ namespace COVID_CSV_Parser
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                var client = new RestClient("https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData?id=vaccination_data");
+                string vaccinationDataURL = "https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData?id=vaccination_data";
+
+                // Download JSON data file
+                GetJSONFileFromURL(vaccinationDataURL, defaultJSONFileDirectory + "\\CovidVaccinationData_" + DateTime.Now.ToString("MM-dd-yyyy") + ".json");
+                //lblCountyFileProcessed.Text = "CovidData_" + selectedDate.ToString("MM-dd-yyyy") + ".csv";
+
+                var client = new RestClient(vaccinationDataURL);
                 client.Timeout = -1;
                 var request = new RestRequest(Method.GET);
                 IRestResponse response = client.Execute(request);
