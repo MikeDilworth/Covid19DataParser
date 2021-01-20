@@ -409,7 +409,8 @@ namespace COVID_CSV_Parser
 
                 conn.Close();
 
-                // Call the stored procedure to update the national level data
+                // Call the stored procedure to update the national level data - NO LONGER REQUIRED
+                /*
                 SqlConnection conn2 = new SqlConnection(config.AppSettings.Settings["sqlConnString"].Value);
                 conn2.Open();
                 SqlCommand cmd2;
@@ -419,6 +420,7 @@ namespace COVID_CSV_Parser
                 };
                 cmd2.ExecuteNonQuery();
                 conn2.Close();
+                */
 
                 // Display stats for processing
                 elapsed.Stop();
@@ -1040,13 +1042,11 @@ namespace COVID_CSV_Parser
                 backgroundWorkerStateLevel.RunWorkerAsync();
             }
 
-            /*
             // Start worker thread to get latest state-level vaccinationdata
             if (backgroundWorkerVaccinationStateLevel.IsBusy != true)
             {
                 backgroundWorkerVaccinationStateLevel.RunWorkerAsync();
             }
-            */
 
             // Start worker thread to get latest county-level data
             if (backgroundWorkerCountyLevel.IsBusy != true)
