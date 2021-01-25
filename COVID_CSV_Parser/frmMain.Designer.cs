@@ -48,20 +48,23 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnGetLatestStateVaccinationData = new System.Windows.Forms.Button();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.btnProcessSelectedVaccinationFile = new System.Windows.Forms.Button();
+            this.txtVaccinationDataFile = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // logTxt
             // 
-            this.logTxt.Location = new System.Drawing.Point(15, 349);
+            this.logTxt.Location = new System.Drawing.Point(11, 387);
             this.logTxt.Multiline = true;
             this.logTxt.Name = "logTxt";
             this.logTxt.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTxt.Size = new System.Drawing.Size(548, 232);
+            this.logTxt.Size = new System.Drawing.Size(548, 173);
             this.logTxt.TabIndex = 0;
             // 
             // btnGetLatestCountyData
             // 
-            this.btnGetLatestCountyData.Location = new System.Drawing.Point(15, 110);
+            this.btnGetLatestCountyData.Location = new System.Drawing.Point(12, 147);
             this.btnGetLatestCountyData.Name = "btnGetLatestCountyData";
             this.btnGetLatestCountyData.Size = new System.Drawing.Size(149, 23);
             this.btnGetLatestCountyData.TabIndex = 1;
@@ -71,7 +74,7 @@
             // 
             // txtStatus
             // 
-            this.txtStatus.Location = new System.Drawing.Point(62, 587);
+            this.txtStatus.Location = new System.Drawing.Point(58, 566);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
             this.txtStatus.Size = new System.Drawing.Size(501, 20);
@@ -80,7 +83,7 @@
             // lblData
             // 
             this.lblData.AutoSize = true;
-            this.lblData.Location = new System.Drawing.Point(16, 330);
+            this.lblData.Location = new System.Drawing.Point(12, 368);
             this.lblData.Name = "lblData";
             this.lblData.Size = new System.Drawing.Size(33, 13);
             this.lblData.TabIndex = 3;
@@ -88,7 +91,7 @@
             // 
             // btnProcessSelectedCountyFile
             // 
-            this.btnProcessSelectedCountyFile.Location = new System.Drawing.Point(181, 110);
+            this.btnProcessSelectedCountyFile.Location = new System.Drawing.Point(179, 147);
             this.btnProcessSelectedCountyFile.Name = "btnProcessSelectedCountyFile";
             this.btnProcessSelectedCountyFile.Size = new System.Drawing.Size(149, 23);
             this.btnProcessSelectedCountyFile.TabIndex = 4;
@@ -105,7 +108,7 @@
             // 
             // txtSelectedCountyFilename
             // 
-            this.txtSelectedCountyFilename.Location = new System.Drawing.Point(336, 113);
+            this.txtSelectedCountyFilename.Location = new System.Drawing.Point(334, 150);
             this.txtSelectedCountyFilename.Name = "txtSelectedCountyFilename";
             this.txtSelectedCountyFilename.ReadOnly = true;
             this.txtSelectedCountyFilename.Size = new System.Drawing.Size(227, 20);
@@ -113,7 +116,7 @@
             // 
             // btnDownloadCountyFile
             // 
-            this.btnDownloadCountyFile.Location = new System.Drawing.Point(181, 155);
+            this.btnDownloadCountyFile.Location = new System.Drawing.Point(179, 188);
             this.btnDownloadCountyFile.Name = "btnDownloadCountyFile";
             this.btnDownloadCountyFile.Size = new System.Drawing.Size(149, 23);
             this.btnDownloadCountyFile.TabIndex = 6;
@@ -123,7 +126,7 @@
             // 
             // monthCalendar
             // 
-            this.monthCalendar.Location = new System.Drawing.Point(336, 155);
+            this.monthCalendar.Location = new System.Drawing.Point(332, 188);
             this.monthCalendar.MaxDate = new System.DateTime(2022, 12, 31, 0, 0, 0, 0);
             this.monthCalendar.MaxSelectionCount = 1;
             this.monthCalendar.MinDate = new System.DateTime(2020, 1, 22, 0, 0, 0, 0);
@@ -133,7 +136,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(333, 326);
+            this.label2.Location = new System.Drawing.Point(329, 364);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(214, 13);
             this.label2.TabIndex = 9;
@@ -142,7 +145,7 @@
             // lblProcessedCounty
             // 
             this.lblProcessedCounty.AutoSize = true;
-            this.lblProcessedCounty.Location = new System.Drawing.Point(178, 192);
+            this.lblProcessedCounty.Location = new System.Drawing.Point(176, 232);
             this.lblProcessedCounty.Name = "lblProcessedCounty";
             this.lblProcessedCounty.Size = new System.Drawing.Size(101, 13);
             this.lblProcessedCounty.TabIndex = 10;
@@ -151,7 +154,7 @@
             // lblCountyFileProcessed
             // 
             this.lblCountyFileProcessed.AutoSize = true;
-            this.lblCountyFileProcessed.Location = new System.Drawing.Point(178, 209);
+            this.lblCountyFileProcessed.Location = new System.Drawing.Point(176, 249);
             this.lblCountyFileProcessed.Name = "lblCountyFileProcessed";
             this.lblCountyFileProcessed.Size = new System.Drawing.Size(88, 13);
             this.lblCountyFileProcessed.TabIndex = 11;
@@ -160,7 +163,7 @@
             // chkShowLogData
             // 
             this.chkShowLogData.AutoSize = true;
-            this.chkShowLogData.Location = new System.Drawing.Point(55, 330);
+            this.chkShowLogData.Location = new System.Drawing.Point(51, 368);
             this.chkShowLogData.Name = "chkShowLogData";
             this.chkShowLogData.Size = new System.Drawing.Size(142, 17);
             this.chkShowLogData.TabIndex = 12;
@@ -172,7 +175,7 @@
             // lblStateFileProcessed
             // 
             this.lblStateFileProcessed.AutoSize = true;
-            this.lblStateFileProcessed.Location = new System.Drawing.Point(176, 51);
+            this.lblStateFileProcessed.Location = new System.Drawing.Point(176, 39);
             this.lblStateFileProcessed.Name = "lblStateFileProcessed";
             this.lblStateFileProcessed.Size = new System.Drawing.Size(88, 13);
             this.lblStateFileProcessed.TabIndex = 18;
@@ -181,7 +184,7 @@
             // lblProcessedState
             // 
             this.lblProcessedState.AutoSize = true;
-            this.lblProcessedState.Location = new System.Drawing.Point(176, 33);
+            this.lblProcessedState.Location = new System.Drawing.Point(176, 21);
             this.lblProcessedState.Name = "lblProcessedState";
             this.lblProcessedState.Size = new System.Drawing.Size(101, 13);
             this.lblProcessedState.TabIndex = 17;
@@ -201,7 +204,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(12, 86);
+            this.label5.Location = new System.Drawing.Point(10, 128);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(139, 16);
             this.label5.TabIndex = 19;
@@ -220,7 +223,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 594);
+            this.label1.Location = new System.Drawing.Point(12, 573);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(40, 13);
             this.label1.TabIndex = 21;
@@ -228,7 +231,7 @@
             // 
             // btnGetLatestStateVaccinationData
             // 
-            this.btnGetLatestStateVaccinationData.Location = new System.Drawing.Point(336, 33);
+            this.btnGetLatestStateVaccinationData.Location = new System.Drawing.Point(13, 62);
             this.btnGetLatestStateVaccinationData.Name = "btnGetLatestStateVaccinationData";
             this.btnGetLatestStateVaccinationData.Size = new System.Drawing.Size(149, 23);
             this.btnGetLatestStateVaccinationData.TabIndex = 22;
@@ -236,11 +239,39 @@
             this.btnGetLatestStateVaccinationData.UseVisualStyleBackColor = true;
             this.btnGetLatestStateVaccinationData.Click += new System.EventHandler(this.btnGetLatestStateVaccinationData_Click);
             // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.DefaultExt = "json";
+            this.openFileDialog2.FileName = "openFileDialog1";
+            this.openFileDialog2.InitialDirectory = "C:\\Covid19JSONVaccinationDataFiles";
+            this.openFileDialog2.Title = "Select CSV Data File for Processing";
+            // 
+            // btnProcessSelectedVaccinationFile
+            // 
+            this.btnProcessSelectedVaccinationFile.Location = new System.Drawing.Point(13, 91);
+            this.btnProcessSelectedVaccinationFile.Name = "btnProcessSelectedVaccinationFile";
+            this.btnProcessSelectedVaccinationFile.Size = new System.Drawing.Size(149, 23);
+            this.btnProcessSelectedVaccinationFile.TabIndex = 23;
+            this.btnProcessSelectedVaccinationFile.Text = "Select File - Manual Update";
+            this.btnProcessSelectedVaccinationFile.UseVisualStyleBackColor = true;
+            this.btnProcessSelectedVaccinationFile.Click += new System.EventHandler(this.btnProcessSelectedVaccinationFile_Click);
+            // 
+            // txtVaccinationDataFile
+            // 
+            this.txtVaccinationDataFile.AutoSize = true;
+            this.txtVaccinationDataFile.Location = new System.Drawing.Point(176, 96);
+            this.txtVaccinationDataFile.Name = "txtVaccinationDataFile";
+            this.txtVaccinationDataFile.Size = new System.Drawing.Size(80, 13);
+            this.txtVaccinationDataFile.TabIndex = 24;
+            this.txtVaccinationDataFile.Text = "No file selected";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(577, 623);
+            this.ClientSize = new System.Drawing.Size(577, 606);
+            this.Controls.Add(this.txtVaccinationDataFile);
+            this.Controls.Add(this.btnProcessSelectedVaccinationFile);
             this.Controls.Add(this.btnGetLatestStateVaccinationData);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
@@ -289,6 +320,9 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnGetLatestStateVaccinationData;
+        private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.Button btnProcessSelectedVaccinationFile;
+        private System.Windows.Forms.Label txtVaccinationDataFile;
     }
 }
 

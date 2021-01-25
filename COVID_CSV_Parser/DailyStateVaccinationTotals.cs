@@ -22,5 +22,7 @@ namespace COVID_CSV_Parser
         public string Administered_Pfizer;
         public string Administered_Unk_Manuf;
         public string Ratio_Admin_Dist;
+        public string Administered_Dose1;
+        public string Administered_Dose2;
     }
 }
