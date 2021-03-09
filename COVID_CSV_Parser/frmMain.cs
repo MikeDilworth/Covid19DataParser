@@ -391,8 +391,8 @@ namespace COVID_CSV_Parser
                         Administered_Pfizer = (string)StateVaccinationData.SelectToken("Administered_Pfizer"),
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
-                        Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2")
+                        Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip")
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
@@ -1182,8 +1182,8 @@ namespace COVID_CSV_Parser
                         Administered_Pfizer = (string)StateVaccinationData.SelectToken("Administered_Pfizer"),
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
-                        Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2")
+                        Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip")
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
