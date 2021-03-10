@@ -20,9 +20,12 @@ namespace COVID_CSV_Parser
         public string Census2019;
         public string Administered_Moderna;
         public string Administered_Pfizer;
+        public string Administered_Janssen; //New
         public string Administered_Unk_Manuf;
         public string Ratio_Admin_Dist;
         public string Administered_Dose1;
         public string Administered_Dose2;
+        public string Administered_Dose1_PopPct; //New
+        public string Administered_Dose2_PopPct; //New
     }
 }

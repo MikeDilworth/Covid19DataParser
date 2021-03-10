@@ -389,10 +389,13 @@ namespace COVID_CSV_Parser
                         Census2019 = (string)StateVaccinationData.SelectToken("Census2019"),
                         Administered_Moderna = (string)StateVaccinationData.SelectToken("Administered_Moderna"),
                         Administered_Pfizer = (string)StateVaccinationData.SelectToken("Administered_Pfizer"),
+                        Administered_Janssen = (string)StateVaccinationData.SelectToken("Administered_Janssen"),
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
                         Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip")
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
+                        Administered_Dose1_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose1_Pop_Pct"), //Not passed into stored proc
+                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
@@ -426,6 +429,7 @@ namespace COVID_CSV_Parser
                     cmd.Parameters.AddWithValue("@Administered_Moderna ", d.Administered_Moderna ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Pfizer ", d.Administered_Pfizer ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Unk_Manuf", d.Administered_Unk_Manuf ?? "");
+                    cmd.Parameters.AddWithValue("@Administered_Janssen", d.Administered_Janssen ?? "");
                     cmd.Parameters.AddWithValue("@Ratio_Admin_Dist", d.Ratio_Admin_Dist ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Dose1", d.Administered_Dose1 ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Dose2", d.Administered_Dose2 ?? "");
@@ -1180,10 +1184,13 @@ namespace COVID_CSV_Parser
                         Census2019 = (string)StateVaccinationData.SelectToken("Census2019"),
                         Administered_Moderna = (string)StateVaccinationData.SelectToken("Administered_Moderna"),
                         Administered_Pfizer = (string)StateVaccinationData.SelectToken("Administered_Pfizer"),
+                        Administered_Janssen = (string)StateVaccinationData.SelectToken("Administered_Janssen"),
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
                         Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip")
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
+                        Administered_Dose1_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose1_Pop_Pct"), //Not passed into stored proc
+                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
@@ -1216,6 +1223,7 @@ namespace COVID_CSV_Parser
                     cmd.Parameters.AddWithValue("@Census2019", d.Census2019 ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Moderna ", d.Administered_Moderna ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Pfizer ", d.Administered_Pfizer ?? "");
+                    cmd.Parameters.AddWithValue("@Administered_Janssen", d.Administered_Janssen ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Unk_Manuf", d.Administered_Unk_Manuf ?? "");
                     cmd.Parameters.AddWithValue("@Ratio_Admin_Dist", d.Ratio_Admin_Dist ?? "");
                     cmd.Parameters.AddWithValue("@Administered_Dose1", d.Administered_Dose1 ?? "");
