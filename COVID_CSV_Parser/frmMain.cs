@@ -19,6 +19,8 @@ using System.Timers;
 using RestSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Xml;
+using System.Net.Mail;
 
 namespace COVID_CSV_Parser
 {
@@ -359,6 +361,7 @@ namespace COVID_CSV_Parser
                 IRestResponse response = client.Execute(request);
 
                 // Create list for data records
+                // Moved to static global
                 var DailyVaccinationDataList = new List<DailyStateVaccinationTotals>();
 
                 //var StateVaccinationDataAr = JArray.Parse(response.Content);
@@ -469,6 +472,9 @@ namespace COVID_CSV_Parser
                 string filePath = @"c:\temp\LatestStateLevelData.json";
                 //File.WriteAllText(filePath, json);
                 */
+
+                // Send out data e-mail
+                sendDataEMail(DailyVaccinationDataList);
 
                 e.Result = resultString;
             }
@@ -1152,6 +1158,7 @@ namespace COVID_CSV_Parser
                 var jsonText = File.ReadAllText(vaccinationDataFilename);
 
                 // Create list for data records
+                // Moved to static global
                 var DailyVaccinationDataList = new List<DailyStateVaccinationTotals>();
 
                 //var StateVaccinationDataAr = JArray.Parse(response.Content);
@@ -1258,6 +1265,9 @@ namespace COVID_CSV_Parser
                 resultString += "State-Level vaccination data update completed successfully at: " + DateTime.Now.ToString();
                 resultString += Environment.NewLine + Environment.NewLine;
 
+                // Send out data e-mail
+                sendDataEMail(DailyVaccinationDataList);
+
                 /*
                 // Write out a basic JSON data file
                 string json = JsonConvert.SerializeObject(response.Content, Formatting.Indented);
@@ -1274,6 +1284,138 @@ namespace COVID_CSV_Parser
                     txtStatus.Text = "Error occurred during state-level vaccination data retrieval and database posting: " + ex.Message;
                 });
             }
+        }
+        public static void sendDataEMail(List<DailyStateVaccinationTotals> DailyVaccinationDataList)
+        {
+            try
+            {
+                string messageBody = "<font>Latest Covid Vaccination Data from the CDC as of: " + DateTime.Now.ToString() + "</font><br><br>";
+                //if (grid.RowCount == 0) return messageBody;
+                string htmlTableStart = "<table style=\"border-collapse:collapse; text-align:center;\" >";
+                string htmlTableEnd = "</table>";
+                string htmlHeaderRowStart = "<tr style=\"background-color:#6FA1D2; color:#ffffff;\">";
+                string htmlHeaderRowEnd = "</tr>";
+                string htmlTrStart = "<tr style=\"color:#555555;\">";
+                string htmlTrEnd = "</tr>";
+                string htmlTdStart = "<td style=\" border-color:#5c87b2; border-style:solid; border-width:thin; padding: 5px;\">";
+                string htmlTdEnd = "</td>";
+                messageBody += htmlTableStart;
+                messageBody += htmlHeaderRowStart;
+                messageBody += htmlTdStart + "State Postal" + htmlTdEnd;
+                messageBody += htmlTdStart + "Doses Distributed" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Total)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Moderna)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Pfizer)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Janssen/J&J)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Dose1+)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Dose2)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Dose1+ Pop Pct" + htmlTdEnd;
+                messageBody += htmlTdStart + "Dose2 Pop Pct" + htmlTdEnd;
+                messageBody += htmlHeaderRowEnd;
+
+                int distributedTotal = 0;
+                int administeredTotal =  0;
+                int administeredModerna = 0;
+                int administeredPfizer = 0;
+                int administeredJanssen = 0;
+                int administeredDose1 = 0;
+                int administeredDose2 = 0;
+
+                DailyStateVaccinationTotals usTotals = new DailyStateVaccinationTotals();
+
+                //Loop all the rows from grid vew and added to html td  
+                for (int i = 0; i <= DailyVaccinationDataList.Count - 1; i++)
+                {
+                    // Exclude territories
+                    string stateTest = DailyVaccinationDataList[i].Location;
+                    if ((stateTest != "AS") && (stateTest != "BP2") && (stateTest != "DD2") && (stateTest != "GU") && (stateTest != "IH2") &&
+                        (stateTest != "MH") && (stateTest != "MP") && (stateTest != "BP2") && (stateTest != "RP") && (stateTest != "US") &&
+                        (stateTest != "VA2") && (stateTest != "LTC") && (stateTest != "FM") && (stateTest != "VI") && (stateTest != "PR"))
+                    {
+                        messageBody = messageBody + htmlTrStart;
+                        messageBody = messageBody + htmlTdStart + DailyVaccinationDataList[i].Location + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Doses_Distributed)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Doses_Administered)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Administered_Moderna)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Administered_Pfizer)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Administered_Janssen)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Administered_Dose1)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(DailyVaccinationDataList[i].Administered_Dose2)) + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + DailyVaccinationDataList[i].Administered_Dose1_PopPct + "%" + htmlTdEnd;
+                        messageBody = messageBody + htmlTdStart + DailyVaccinationDataList[i].Administered_Dose2_PopPct + "%" + htmlTdEnd;
+                        messageBody = messageBody + htmlTrEnd;
+                    }
+
+                    // Set US totals
+                    if (stateTest == "US")
+                    {
+                        usTotals = DailyVaccinationDataList[i];
+                    }
+                }
+
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + " " + htmlTdEnd;
+                messageBody = messageBody + htmlTrEnd;
+                messageBody = messageBody + htmlTdStart + "U.S. TOTAL" + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Doses_Distributed)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Doses_Administered)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Administered_Moderna)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Administered_Pfizer)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Administered_Janssen)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Administered_Dose1)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + String.Format("{0:n0}", Extensions.ParseInt(usTotals.Administered_Dose2)) + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + usTotals.Administered_Dose1_PopPct + "%" + htmlTdEnd;
+                messageBody = messageBody + htmlTdStart + usTotals.Administered_Dose2_PopPct + "%" + htmlTdEnd;
+
+                messageBody = messageBody + htmlTrEnd;
+
+                messageBody = messageBody + htmlTableEnd;
+
+                /*
+                MailMessage mail = new MailMessage("ElectionData@foxnews.com", "seniorproducers@foxnews.com, producers@foxnews.com, brainroom@foxnews.com, politics3@foxnews.com, mike.dilworth@foxnews.com, MediaProdManagers@foxnews.com, Jason.Kornegay@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
+                
+                */
+                MailMessage mail = new MailMessage("CovidVaccinationData@foxnews.com", "Mike.Dilworth@foxnews.com, Bill.Hemmer@foxnews.com, " +
+                    "Remy.Numa@foxnews.com, Kristen.Horan@foxnews.com, Amy.Fenton@foxnews.com, Jason.Kornegay@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
+                //MailMessage mail = new MailMessage("ElectionData@foxnews.com", "seniorproducers@foxnews.com, producers@foxnews.com, brainroom@foxnews.com, politics3@foxnews.com, mike.dilworth@foxnews.com, MediaProdManagers@foxnews.com, Jason.Kornegay@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
+                //MailMessage mail = new MailMessage("ElectionData@foxnews.com", "mike.dilworth@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
+                SmtpClient mailClient = new SmtpClient();
+                mailClient.Port = 25;
+                mailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                mailClient.UseDefaultCredentials = true;
+                mailClient.Host = "10.232.16.121";
+                mail.Subject = "Latest Covid Vaccination Data";
+                //mail.Body = Environment.NewLine + "Latest Advance Voting Data from the Associated Press as of " + DateTime.Now.ToString() + Environment.NewLine;
+                mail.Body += messageBody;
+                mail.IsBodyHtml = true;
+                mailClient.Send(mail);
+            }
+            catch (Exception ex)
+            {
+                //txtStatus.Text = "Error occurred during state-level data retrieval and database posting: " + ex.Message;
+            }
+        }
+
+    }
+    public static class Extensions
+    {
+        public static int ParseInt(this string value, int defaultIntValue = 0)
+        {
+            int parsedInt;
+            if (int.TryParse(value, out parsedInt))
+            {
+                return parsedInt;
+            }
+
+            return defaultIntValue;
         }
     }
 }
