@@ -396,9 +396,11 @@ namespace COVID_CSV_Parser
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
                         Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
                         Administered_Dose1_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose1_Pop_Pct"), //Not passed into stored proc
-                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
+                        //Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
+                        //Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Series_Complete_Yes"),
+                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Series_Complete_Pop_Pct") //Not passed into stored proc
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
@@ -1195,9 +1197,11 @@ namespace COVID_CSV_Parser
                         Administered_Unk_Manuf = (string)StateVaccinationData.SelectToken("Administered_Unk_Manuf"),
                         Ratio_Admin_Dist = (string)StateVaccinationData.SelectToken("Ratio_Admin_Dist"),
                         Administered_Dose1 = (string)StateVaccinationData.SelectToken("Administered_Dose1_Recip"),
-                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
                         Administered_Dose1_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose1_Pop_Pct"), //Not passed into stored proc
-                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
+                        //Administered_Dose2 = (string)StateVaccinationData.SelectToken("Administered_Dose2_Recip"),
+                        //Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Administered_Dose2_Pop_Pct") //Not passed into stored proc
+                        Administered_Dose2 = (string)StateVaccinationData.SelectToken("Series_Complete_Yes"),
+                        Administered_Dose2_PopPct = (string)StateVaccinationData.SelectToken("Series_Complete_Pop_Pct") //Not passed into stored proc
                     };
 
                     DailyVaccinationDataList.Add(dsvt);
@@ -1308,9 +1312,9 @@ namespace COVID_CSV_Parser
                 messageBody += htmlTdStart + "Administered (Pfizer)" + htmlTdEnd;
                 messageBody += htmlTdStart + "Administered (Janssen/J&J)" + htmlTdEnd;
                 messageBody += htmlTdStart + "Administered (Dose1+)" + htmlTdEnd;
-                messageBody += htmlTdStart + "Administered (Dose2)" + htmlTdEnd;
+                messageBody += htmlTdStart + "Administered (Fully)" + htmlTdEnd;
                 messageBody += htmlTdStart + "Dose1+ Pop Pct" + htmlTdEnd;
-                messageBody += htmlTdStart + "Dose2 Pop Pct" + htmlTdEnd;
+                messageBody += htmlTdStart + "Fully Pop Pct" + htmlTdEnd;
                 messageBody += htmlHeaderRowEnd;
 
                 int distributedTotal = 0;
@@ -1384,7 +1388,9 @@ namespace COVID_CSV_Parser
                 
                 */
                 MailMessage mail = new MailMessage("CovidVaccinationData@foxnews.com", "Mike.Dilworth@foxnews.com, Bill.Hemmer@foxnews.com, " +
-                    "Remy.Numa@foxnews.com, Kristen.Horan@foxnews.com, Amy.Fenton@foxnews.com, Jason.Kornegay@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
+                    "Remy.Numa@foxnews.com, Kristen.Horan@foxnews.com, Amy.Fenton@foxnews.com, Jason.Kornegay@foxnews.com, Matthew.Borowski@foxbusiness.com, " +
+                    "Sumner.Park@foxnews.com, 721-CORONAVIRUS@FOXNEWS.COM"); //config.AppSettings.Settings["toEmail"].Value);
+                //MailMessage mail = new MailMessage("CovidVaccinationData@foxnews.com", "Mike.Dilworth@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
                 //MailMessage mail = new MailMessage("ElectionData@foxnews.com", "seniorproducers@foxnews.com, producers@foxnews.com, brainroom@foxnews.com, politics3@foxnews.com, mike.dilworth@foxnews.com, MediaProdManagers@foxnews.com, Jason.Kornegay@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
                 //MailMessage mail = new MailMessage("ElectionData@foxnews.com", "mike.dilworth@foxnews.com"); //config.AppSettings.Settings["toEmail"].Value);
                 SmtpClient mailClient = new SmtpClient();
