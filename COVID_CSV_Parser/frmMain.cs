@@ -475,8 +475,11 @@ namespace COVID_CSV_Parser
                 //File.WriteAllText(filePath, json);
                 */
 
-                // Send out data e-mail
-                sendDataEMail(DailyVaccinationDataList);
+                // Send out data e-mail Mondays at 6:00 AM             
+                if ((DateTime.Now.DayOfWeek == DayOfWeek.Monday) && (DateTime.Now.Hour == 6))
+                {
+                    sendDataEMail(DailyVaccinationDataList);
+                }
 
                 e.Result = resultString;
             }
@@ -1270,7 +1273,10 @@ namespace COVID_CSV_Parser
                 resultString += Environment.NewLine + Environment.NewLine;
 
                 // Send out data e-mail
-                sendDataEMail(DailyVaccinationDataList);
+                if ((DateTime.Now.DayOfWeek == DayOfWeek.Monday) && (DateTime.Now.Hour == 6))
+                {
+                    sendDataEMail(DailyVaccinationDataList);
+                }
 
                 /*
                 // Write out a basic JSON data file
